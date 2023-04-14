@@ -1,30 +1,17 @@
-using CleanArch.Infra.Data.Context;
-using CleanArch.Infra.IoC;
-using CleanArch.Mvc.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Test.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
 // Add services to the container.
-
-
-var connectionString = builder.Configuration.GetConnectionString("UniversityDBConnection");
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddEntityFrameworkStores<ApplicationDbContext>();
-
-builder.Services.AddDbContext<UniversityDBContext>(options =>
-{
-    options.UseSqlServer(builder.Configuration.GetConnectionString("UniversityConnection"));
-});
-
-RegisterServices(builder.Services);
-
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
@@ -43,9 +30,6 @@ else
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-app.UseCookiePolicy();
-
-
 
 app.UseRouting();
 
@@ -55,15 +39,6 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
-
-
-
 app.MapRazorPages();
 
 app.Run();
-
-
-static void RegisterServices(IServiceCollection services)
-{
-    DependencyContainer.RegisterServices(services);
-}
